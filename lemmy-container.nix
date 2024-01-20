@@ -24,6 +24,7 @@ let
             volumes = [
               "postgres-data:/var/lib/postgres/data"
               "pictrs-data:/var/lib/pict-rs"
+              "${cfg.admin-password-file}:${cfg.admin-password-file}"
             ];
             ports = "${toString cfg.port}:80";
             networks = [ "internal_network" "internal_network" ];
@@ -43,7 +44,8 @@ let
                   nginx.enable = true;
                   settings = {
                     email = {
-                      smtp_server = cfg.smtp.server;
+                      smtp_server = cfg.smtp.host;
+                      smtp_port = cfg.smtp.port;
                       smtp_from_address = "noreply@${cfg.hostname}";
                     };
                     hostname = cfg.hostname;
@@ -91,6 +93,19 @@ in {
     admin-password-file = mkOption {
       type = str;
       description = "Path to a file containing the administrator password.";
+    };
+
+    smtp = {
+      host = mkOption {
+        type = str;
+        description = "SMTP server hostname.";
+      };
+
+      port = mkOption {
+        type = str;
+        description = "SMTP server port.";
+        default = 25;
+      };
     };
   };
 
