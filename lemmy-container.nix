@@ -71,7 +71,7 @@ let
       };
     };
 in {
-  options.services.lemmy-container = with types; {
+  options.services.lemmyContainer = with types; {
     enable = mkEnableOption "Enable Lemmy server in a Podman container.";
 
     hostname = mkOption {
