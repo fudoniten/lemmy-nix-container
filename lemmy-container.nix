@@ -30,7 +30,8 @@ let
             networks = [ "internal_network" "internal_network" ];
           };
           nixos = {
-            useSystemd = {
+            useSystemd = true;
+            configuration = {
               boot.tmp.useTmpfs = true;
               system.nssModules = mkForce [ ];
               services = {
