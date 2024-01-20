@@ -103,7 +103,7 @@ in {
       };
 
       port = mkOption {
-        type = str;
+        type = port;
         description = "SMTP server port.";
         default = 25;
       };
