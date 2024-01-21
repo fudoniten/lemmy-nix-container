@@ -10,8 +10,9 @@ let
       networks = { external_network.internal = false; };
 
       docker-compose.volumes = {
-        postgres-data = { };
         pictrs-data = { };
+        postgres-data = { };
+        private-data = { };
       };
 
       services = {
@@ -21,10 +22,12 @@ let
             volumes = [
               "postgres-data:/var/lib/postgres/data"
               "pictrs-data:/var/lib/pict-rs"
+              "private-data:/var/lib/private"
               "${cfg.admin-password-file}:${cfg.admin-password-file}"
             ];
             ports = [ "${toString cfg.port}:80" ];
             networks = [ "external_network" ];
+            capabilities.SYS_ADMIN = true;
           };
           nixos = {
             useSystemd = true;
