@@ -10,7 +10,6 @@ let
       networks = { external_network.internal = false; };
 
       docker-compose.volumes = {
-        pictrs-data = { };
         postgres-data = { };
         private-data = { };
       };
@@ -21,7 +20,6 @@ let
             restart = "always";
             volumes = [
               "postgres-data:/var/lib/postgres/data"
-              "pictrs-data:/var/lib/pict-rs"
               "private-data:/var/lib/private"
               "${cfg.admin-password-file}:${cfg.admin-password-file}"
             ];
