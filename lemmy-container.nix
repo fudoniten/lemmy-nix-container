@@ -26,7 +26,7 @@ let
               "pictrs-data:/var/lib/pict-rs"
               "${cfg.admin-password-file}:${cfg.admin-password-file}"
             ];
-            ports = "${toString cfg.port}:80";
+            ports = [ "${toString cfg.port}:80" ];
             networks = [ "internal_network" "internal_network" ];
           };
           nixos = {
