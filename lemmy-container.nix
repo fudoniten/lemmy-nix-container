@@ -7,10 +7,7 @@ let
   lemmyImage = { ... }:
     { pkgs, ... }: {
       project.name = "lemmy";
-      networks = {
-        internal_network.internal = true;
-        external_network.internal = false;
-      };
+      networks = { external_network.internal = false; };
 
       docker-compose.volumes = {
         postgres-data = { };
@@ -27,7 +24,7 @@ let
               "${cfg.admin-password-file}:${cfg.admin-password-file}"
             ];
             ports = [ "${toString cfg.port}:80" ];
-            networks = [ "internal_network" "internal_network" ];
+            networks = [ "external_network" ];
           };
           nixos = {
             useSystemd = true;
