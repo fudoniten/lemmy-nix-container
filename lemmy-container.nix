@@ -11,7 +11,7 @@ let
 
       docker-compose.volumes = {
         postgres-data = { };
-        lemmy-data = { };
+        pictrs-data = { };
       };
 
       services = {
