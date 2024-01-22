@@ -25,7 +25,10 @@ let
             ];
             ports = [ "${toString cfg.port}:80" ];
             networks = [ "external_network" ];
-            capabilities.SYS_ADMIN = true;
+            capabilities = {
+              BPF = true;
+              SYS_ADMIN = true;
+            };
           };
           nixos = {
             useSystemd = true;
