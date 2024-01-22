@@ -44,6 +44,7 @@ let
                   database.createLocally = true;
                   adminPasswordFile = cfg.admin-password-file;
                   nginx.enable = true;
+                  server.package = cfg.server-package;
                   settings = {
                     email = {
                       smtp_server = cfg.smtp.host;
@@ -108,6 +109,12 @@ in {
         description = "SMTP server port.";
         default = 25;
       };
+    };
+
+    server-package = mkOption {
+      type = package;
+      description = "Package to use for the server.";
+      default = pkgs.lemmy-server;
     };
   };
 
