@@ -97,6 +97,7 @@ in {
             nginx.enable = true;
             server.package = cfg.server-package;
             settings = {
+              admin_username = "admin";
               email = {
                 smtp_server = "${cfg.smtp.host}:${toString cfg.smtp.port}";
                 smtp_from_address = "noreply@${cfg.hostname}";
