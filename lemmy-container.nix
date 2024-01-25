@@ -55,8 +55,8 @@ in {
 
   config = mkIf cfg.enable {
     systemd.tmpfiles.rules = [
-      "d ${state-directory}/postgres 0700 root root - -"
-      "d ${state-directory}/pictrs 0700 root root - -"
+      "d ${cfg.state-directory}/postgres 0700 root root - -"
+      "d ${cfg.state-directory}/pictrs 0700 root root - -"
     ];
 
     containers.lemmy = {
