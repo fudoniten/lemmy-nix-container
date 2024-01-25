@@ -78,6 +78,7 @@ in {
           hostPath = cfg.admin-password-file;
         };
       };
+      extraCapabilities = [ "CAP_SYS_ADMIN" ];
       config = {
         boot.tmp.useTmpfs = true;
         system.nssModules = mkForce [ ];
