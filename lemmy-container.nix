@@ -67,14 +67,17 @@ in {
         hostPort = cfg.port;
         containerPort = 80;
       }];
-      ## Does ephemeral mean read-only?
-      # ephemeral = true;
+      ephemeral = true;
       bindMounts = {
         "/var/lib/postgres/data" = {
           hostPath = "${cfg.state-directory}/postgres";
+          isReadOnly = false;
         };
-        "/var/lib/private" = { hostPath = "${cfg.state-directory}/pictrs"; };
-        "${cfg.admin-password-file}" = {
+        "/var/lib/private" = {
+          hostPath = "${cfg.state-directory}/pictrs";
+          isReadOnly = false;
+        };
+        "/run/lemmy-container/admin.passwd" = {
           isReadOnly = true;
           hostPath = cfg.admin-password-file;
         };
@@ -90,7 +93,7 @@ in {
           lemmy = {
             enable = true;
             database.createLocally = true;
-            adminPasswordFile = cfg.admin-password-file;
+            adminPasswordFile = "/run/lemmy-container/admin.passwd";
             nginx.enable = true;
             server.package = cfg.server-package;
             settings = {
