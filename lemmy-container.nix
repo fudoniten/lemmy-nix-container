@@ -80,6 +80,7 @@ in {
       };
       config = {
         boot.tmp.useTmpfs = true;
+        system.nssModules = mkForce [ ];
         services = {
           nscd.enable = false;
           postgresql.enable = true;
