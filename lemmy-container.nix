@@ -100,6 +100,7 @@ in {
               email = {
                 smtp_server = "${cfg.smtp.host}:${toString cfg.smtp.port}";
                 smtp_from_address = "noreply@${cfg.hostname}";
+                tls_type = "starttls";
               };
               hostname = cfg.hostname;
               setup.site_name = cfg.site-name;
