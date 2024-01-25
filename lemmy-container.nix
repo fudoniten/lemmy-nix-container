@@ -67,7 +67,8 @@ in {
         hostPort = cfg.port;
         containerPort = 80;
       }];
-      ephemeral = true;
+      ## Does ephemeral mean read-only?
+      # ephemeral = true;
       bindMounts = {
         "/var/lib/postgres/data" = {
           hostPath = "${cfg.state-directory}/postgres";
