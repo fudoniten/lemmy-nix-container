@@ -98,8 +98,7 @@ in {
             server.package = cfg.server-package;
             settings = {
               email = {
-                smtp_server = cfg.smtp.host;
-                smtp_port = cfg.smtp.port;
+                smtp_server = "${cfg.smtp.host}:${cfg.smtp.port}";
                 smtp_from_address = "noreply@${cfg.hostname}";
               };
               hostname = cfg.hostname;
