@@ -97,14 +97,16 @@ in {
             nginx.enable = true;
             server.package = cfg.server-package;
             settings = {
-              admin_username = "admin";
               email = {
                 smtp_server = "${cfg.smtp.host}:${toString cfg.smtp.port}";
                 smtp_from_address = "noreply@${cfg.hostname}";
                 tls_type = "starttls";
               };
               hostname = cfg.hostname;
-              setup.site_name = cfg.site-name;
+              setup = {
+                admin_username = "admin";
+                site_name = cfg.site-name;
+              };
             };
           };
           nginx = {
