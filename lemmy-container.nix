@@ -54,6 +54,11 @@ in {
   };
 
   config = mkIf cfg.enable {
+    systemd.tmpfiles.rules = [
+      "d ${state/directory}/postgres 0700 root root - -"
+      "d ${state/directory}/pictrs 0700 root root - -"
+    ];
+
     containers.lemmy = {
       autoStart = true;
       privateNetwork = true;
@@ -67,9 +72,7 @@ in {
         "/var/lib/postgres/data" = {
           hostPath = "${cfg.state-directory}/postgres";
         };
-        "/var/lib/private" = {
-          hostPath = "${cfg.state-directory}/lemmy-data";
-        };
+        "/var/lib/private" = { hostPath = "${cfg.state-directory}/pictrs"; };
         "${cfg.admin-password-file}" = {
           isReadOnly = true;
           hostPath = cfg.admin-password-file;
