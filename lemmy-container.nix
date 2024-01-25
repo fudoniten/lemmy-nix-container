@@ -1,78 +1,8 @@
 { config, lib, pkgs, ... }@toplevel:
 
 with lib;
-let
-  cfg = config.services.lemmyContainer;
+let cfg = config.services.lemmyContainer;
 
-  lemmyImage = { ... }:
-    { pkgs, ... }: {
-      project.name = "lemmy";
-      networks = { external_network.internal = false; };
-
-      docker-compose.volumes = {
-        postgres-data = { };
-        private-data = { };
-      };
-
-      services = {
-        lemmy = { pkgs, ... }: {
-          service = {
-            restart = "always";
-            volumes = [
-              "postgres-data:/var/lib/postgres/data"
-              "private-data:/var/lib/private"
-              "${cfg.admin-password-file}:${cfg.admin-password-file}"
-            ];
-            ports = [ "${toString cfg.port}:80" ];
-            networks = [ "external_network" ];
-            capabilities = {
-              BPF = true;
-              SYS_ADMIN = true;
-            };
-          };
-          nixos = {
-            useSystemd = true;
-            configuration = {
-              boot.tmp.useTmpfs = true;
-              system.nssModules = mkForce [ ];
-              services = {
-                nscd.enable = false;
-                postgresql.enable = true;
-                pict-rs.enable = true;
-                lemmy = {
-                  enable = true;
-                  database.createLocally = true;
-                  adminPasswordFile = cfg.admin-password-file;
-                  nginx.enable = true;
-                  server.package = cfg.server-package;
-                  settings = {
-                    email = {
-                      smtp_server = cfg.smtp.host;
-                      smtp_port = cfg.smtp.port;
-                      smtp_from_address = "noreply@${cfg.hostname}";
-                    };
-                    hostname = cfg.hostname;
-                    setup.site_name = cfg.site-name;
-                  };
-                };
-                nginx = {
-                  recommendedGzipSettings = true;
-                  recommendedOptimisation = true;
-                  recommendedProxySettings = true;
-                  commonHttpConfig = ''
-                    log_format with_response_time '$remote_addr - $remote_user [$time_local] '
-                                 '"$request" $status $body_bytes_sent '
-                                 '"$http_referer" "$http_user_agent" '
-                                 '"$request_time" "$upstream_response_time"';
-                    access_log /var/log/nginx/access.log with_response_time;
-                  '';
-                };
-              };
-            };
-          };
-        };
-      };
-    };
 in {
   options.services.lemmyContainer = with types; {
     enable = mkEnableOption "Enable Lemmy server in a Podman container.";
@@ -116,11 +46,72 @@ in {
       description = "Package to use for the server.";
       default = pkgs.lemmy-server;
     };
+
+    state-directory = mkOption {
+      type = str;
+      description = "Path at which to store server state.";
+    };
   };
 
   config = mkIf cfg.enable {
-    virtualisation.arion.projects.lemmy.settings = let image = lemmyImage { };
-    in { imports = [ image ]; };
+    containers.lemmy = {
+      autoStart = true;
+      privateNetwork = true;
+      forwardPorts = [{
+        protocol = "tcp";
+        hostPort = cfg.port;
+        containerPort = 80;
+      }];
+      ephemeral = true;
+      bindMounts = {
+        "/var/lib/postgres/data" = {
+          hostPath = "${cfg.state-directory}/postgres";
+        };
+        "/var/lib/private" = {
+          hostPath = "${cfg.state-directory}/lemmy-data";
+        };
+        "${cfg.admin-password-file}" = {
+          isReadOnly = true;
+          hostPath = cfg.admin-password-file;
+        };
+      };
+      config = {
+        boot.tmp.useTmpfs = true;
+        services = {
+          nscd.enable = false;
+          postgresql.enable = true;
+          pict-rs.enable = true;
+          lemmy = {
+            enable = true;
+            database.createLocally = true;
+            adminPasswordFile = cfg.admin-password-file;
+            nginx.enable = true;
+            server.package = cfg.server-package;
+            settings = {
+              email = {
+                smtp_server = cfg.smtp.host;
+                smtp_port = cfg.smtp.port;
+                smtp_from_address = "noreply@${cfg.hostname}";
+              };
+              hostname = cfg.hostname;
+              setup.site_name = cfg.site-name;
+            };
+          };
+          nginx = {
+            recommendedGzipSettings = true;
+            recommendedOptimisation = true;
+            recommendedProxySettings = true;
+            commonHttpConfig = ''
+              log_format with_response_time '$remote_addr - $remote_user [$time_local] '
+                           '"$request" $status $body_bytes_sent '
+                           '"$http_referer" "$http_user_agent" '
+                           '"$request_time" "$upstream_response_time"';
+              access_log /var/log/nginx/access.log with_response_time;
+            '';
+          };
+        };
+      };
+    };
 
     services.nginx = {
       enable = true;
