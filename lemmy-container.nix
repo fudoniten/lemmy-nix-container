@@ -90,7 +90,7 @@ in {
           requiredBy = [ "lemmy.service" "postgresql.service" ];
           before = [ "lemmy.service" ];
           after = [ "postgresql.service" ];
-          path = with pkgs; [ pwgen config.services.postgresql.package ];
+          path = with pkgs; [ sudo pwgen config.services.postgresql.package ];
           script = ''
             PASSWD=$(pwgen 25)
             mkdir -p /run/lemmy
