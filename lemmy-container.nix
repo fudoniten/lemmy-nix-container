@@ -103,7 +103,7 @@ in {
           pict-rs.enable = true;
           lemmy = {
             enable = true;
-            database.urlFile = "/run/lemmy/postgresql.passwd";
+            database.uriFile = "/run/lemmy/postgresql.passwd";
             adminPasswordFile = "/run/lemmy-container/admin.passwd";
             nginx.enable = true;
             server.package = cfg.server-package;
