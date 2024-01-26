@@ -100,7 +100,14 @@ in {
         };
         services = {
           nscd.enable = false;
-          postgresql.enable = true;
+          postgresql = {
+            enable = true;
+            ensureUsers = [{
+              name = "lemmy";
+              ensureDBOwnership = true;
+            }];
+            ensureDatabases = [ "lemmy" ];
+          };
           pict-rs.enable = true;
           lemmy = {
             enable = true;
