@@ -93,6 +93,7 @@ in {
           path = with pkgs; [ pwgen config.services.postgresql.package ];
           script = ''
             PASSWD=$(pwgen 25)
+            mkdir -p /run/lemmy
             echo "postgresql://lemmy:$PASSWD@lemmy&host=/var/run/postgresql" > /run/lemmy/postgresql.passwd
             sudo -u postgres psql -c "ALTER USER lemmy ENCRYPTED PASSWORD '$PASSWD';"
           '';
