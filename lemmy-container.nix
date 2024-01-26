@@ -23,10 +23,10 @@ in {
       description = "Name of the Lemmy site.";
     };
 
-    admin-password-file = mkOption {
-      type = str;
-      description = "Path to a file containing the administrator password.";
-    };
+    # admin-password-file = mkOption {
+    #   type = str;
+    #   description = "Path to a file containing the administrator password.";
+    # };
 
     smtp = {
       host = mkOption {
@@ -77,10 +77,10 @@ in {
           hostPath = "${cfg.state-directory}/pictrs";
           isReadOnly = false;
         };
-        "/run/lemmy-container/admin.passwd" = {
-          isReadOnly = true;
-          hostPath = cfg.admin-password-file;
-        };
+        # "/run/lemmy-container/admin.passwd" = {
+        #   isReadOnly = true;
+        #   hostPath = cfg.admin-password-file;
+        # };
       };
       additionalCapabilities = [ "CAP_SYS_ADMIN" ];
       config = {
@@ -112,7 +112,7 @@ in {
           lemmy = {
             enable = true;
             database.uriFile = "/run/lemmy/postgresql.passwd";
-            adminPasswordFile = "/run/lemmy-container/admin.passwd";
+            # adminPasswordFile = "/run/lemmy-container/admin.passwd";
             nginx.enable = true;
             server.package = cfg.server-package;
             settings = {
