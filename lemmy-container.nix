@@ -86,13 +86,24 @@ in {
       config = {
         boot.tmp.useTmpfs = true;
         system.nssModules = mkForce [ ];
+        systemd.services.postgresPasswdGenerator = {
+          requiredBy = [ "lemmy.service" "postgresql.service" ];
+          before = [ "lemmy.service" ];
+          after = [ "postgresql.service" ];
+          path = with pkgs; [ pwgen config.services.postgresql.package ];
+          script = ''
+            PASSWD=$(pwgen 25)
+            echo "postgresql://lemmy:$PASSWD@lemmy&host=/var/run/postgresql" > /run/lemmy/postgresql.passwd
+            sudo -u postgres psql -c "ALTER USER lemmy ENCRYPTED PASSWORD '$PASSWD';"
+          '';
+        };
         services = {
           nscd.enable = false;
           postgresql.enable = true;
           pict-rs.enable = true;
           lemmy = {
             enable = true;
-            database.createLocally = true;
+            database.urlFile = "/run/lemmy/postgresql.passwd";
             adminPasswordFile = "/run/lemmy-container/admin.passwd";
             nginx.enable = true;
             server.package = cfg.server-package;
